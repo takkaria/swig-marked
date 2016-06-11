@@ -1,18 +1,20 @@
-var marked = require('marked');
+var remarkable = require('remarkable');
 
 /**
  * {% markdown }...{% endmarkdown %}
+ *
+ * Based on swig-marked by Matthijs van Henten
  *
  * Based upon the original markdown tag writen by Paul Armstrong
  * https://github.com/paularmstrong/swig-extras
  *
  * Extended from the markdown tag written by Jon Schlinkert, Brian Woodward & contributors
  */
-function tag(marked) {
+function tag(remarkable) {
     return {
         parse: function(str, line, parser, types, options) {
             parser.on('*', function() {
-                throw new Error('The marked tag does not accept arguments');
+                throw new Error('The remarkable tag does not accept arguments');
             });
 
             return true;
@@ -23,7 +25,7 @@ function tag(marked) {
                 '  var __o = _output;\n' +
                 '  _output = "";\n' +
                 compiler(content, parents, options, blockName) + ';\n' +
-                '  __o += _ext.markdown(_output);\n' +
+                '  __o += _ext.remarkable.render(_output);\n' +
                 '  _output = __o;\n' +
                 '})();\n';
         },
@@ -33,8 +35,8 @@ function tag(marked) {
         blockLevel: false,
 
         ext: {
-            name: 'markdown',
-            obj: marked
+            name: 'remarkable',
+            obj: remarkable
         },
 
         safe: true
@@ -42,28 +44,28 @@ function tag(marked) {
 }
 
 /**
- * Wrap around marked.setOptions, adding the possiblity of overriding defaults if needed.
- * setOptions sets the options for *all* instances of marked at this package's level, sadly,
+ * Wrap around remarkable.setOptions, adding the possiblity of overriding defaults if needed.
+ * setOptions sets the options for *all* instances of remarkable at this package's level, sadly,
  * so you're basically changing your global markdown config each time.
  */
 function configure(options) {
-    marked.setOptions(options || {});
+    var md = new remarkable(options);
 
     return {
         useTag: function(swig, name) {
-            var t = tag(marked);
+            var t = tag(md);
 
-            swig.setTag(name || 'marked', t.parse, t.compile, t.ends, t.blockLevel);
+            swig.setTag(name || 'markdown', t.parse, t.compile, t.ends, t.blockLevel);
             swig.setExtension(t.ext.name, t.ext.obj);
         },
 
         useFilter: function(swig, name) {
-            swig.setFilter(name || 'marked', this.filter);
+            swig.setFilter(name || 'markdown', this.filter);
         },
 
         get filter() {
             var filter = function(str) {
-                return marked(str);
+                return md.render(str);
             };
 
             filter.safe = true;
@@ -72,7 +74,7 @@ function configure(options) {
         },
 
         get tag() {
-            return tag(marked);
+            return tag(md);
         }
     };
 }
