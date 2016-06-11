@@ -1,6 +1,6 @@
 {
   "name": "swig-remarkable",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Markdown filters and tags for swigs, backed by remarkable",
   "main": "index.js",
   "scripts": {
