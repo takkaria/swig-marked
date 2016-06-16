@@ -22,9 +22,9 @@
     "Matthijs van Henten <matthijs@ischen.nl>",
     "Andi Sidwell <andi@takkaria.org>"
   ],
-  "license": "GPL",
+  "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/mvhenten/swig-remarkable/issues"
+    "url": "https://github.com/takkaria/swig-remarkable/issues"
   },
   "devDependencies": {
     "js-beautify": "^1.4.2",
